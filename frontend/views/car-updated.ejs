@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+    <%- include('../views/head')%>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="../list-cars.css">
+    <link rel="stylesheet" href="../car-add.css">
+</head>
+<style>
+    body {
+        background-color: #E5E5E5;
+        height: 100vh;
+    }
+</style>
+
+<body id="body-pd" class="">
+    <%- include('../views/sidebar')%>
+    <div class="main-content" style="padding-top:102px;">
+        <div class="row row-cols-auto justify-content-between d-flex">
+            <div class="b-left col">
+                <div class="link-nav">
+                    <a href="#" class="link-nav-car">Cars</a>
+                    <img src="../img/Vector-right.png" alt="" class="vactor-right">
+                    <a href="#" class="link-nav-car">List Car</a>
+                    <img src="../img/Vector-right.png" alt="" class="vactor-right">
+                    <a href="#" class="link-nav-list-car">Update Car Information</a>
+                </div>
+                <h1 class="title">Update Car Information</h1>
+            </div>
+        </div>
+         <form action="/car-update/<%= data.id %>" method="post" enctype='multipart/form-data'>
+            <div class="update-item">
+                <table class="table table-borderless">
+                    <tr>
+                        <td class="colum-label"><label for="name" class="item-label control-label">Nama</label></td>
+                        <td><input type="text" name="name" id="item-input" required="required" value="<%= data.name %>"></td>
+                    </tr>
+                    <tr>
+                        <td class="colum-label"><label for="" class="item-label control-label">Sewa Per Hari</label>
+                        </td>
+                        <td><input type="number" name="price" id="item-input" placeholder="Rp.0,-" value="<%= data.price %>"></td>
+                    </tr>
+                    <tr>
+                        <td class="colum-label"><label for="" class="item-label control-label">Ukuran</label></td>
+                        <td>
+                            <select class="" id="item-input" required name="size" id="slc" value="<%= data.size %>">
+                                <option value="<%= data.size %>" hidden ><%= data.size %></option>
+                                <option id="slc" value="Small">Small</option>
+                                <option id="slc" value="Medium">Medium</option>
+                                <option id="slc" value="Large">Large</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="colum-label"><label for="" class="item-label control-label">Foto</label></td>
+                        <td>
+                            <div class="input-group mb-2" style="width: 339px; ;">
+                                <input type="file" class="form-control" id="inputGroupFile02" name="image" value="<%= data.image%>" required>
+                                <label class="input-group-text" for="inputGroupFile02">
+                                    <img src="../img/fi_upload.png" alt="">
+                                </label>
+                            </div>
+                            <p class="item-p">File size max. 2MB</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <footer class=" d-flex foot">
+                <a href="/" class="button-can me-4">Cancel</a>
+                <button type="submit" class="button-can sv">Save</button>
+            </footer>
+        </form>
+    </div>
+</body>
+
+</html>

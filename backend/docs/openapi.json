@@ -1,0 +1,1131 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FSW-3_challenge-6 - Car Management API (OpenAPI 3.0)",
+    "version": "1.0",
+    "description": "API to manage Binar Car Rental service website. This API is a part of fullstack development course individual project by Binar Academy. \n\n User is divided into three roles: superadmin, admin, member \n\n Superadmin default account details can be found on this project [repository](https://github.com/erickyudha/BCR_Car-Management-API_OpenAPI3) documentation. Superadmin account details can also be modified by following the instruction there.",
+    "contact": {
+      "name": "rio widywasa",
+      "email": "riowidywasa@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:1001/api/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Login or register"
+    },
+    {
+      "name": "users",
+      "description": "Access user"
+    },
+    {
+      "name": "cars",
+      "description": "Operation to cars"
+    }
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register new member",
+        "description": "Register new account with member status",
+        "operationId": "registerMember",
+        "security": [
+          {}
+        ],
+        "requestBody": {
+          "description": "Required fields [email, password, name]",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterCred"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "If failed to retrive the data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultErrMsg"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login with account",
+        "description": "Login and get bearer token for auth",
+        "operationId": "login",
+        "security": [
+          {}
+        ],
+        "requestBody": {
+          "description": "Required fields [email, password]",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "admin@gmail.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "login successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/LoginCred"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultErrMsg"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "invalid email / password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "FAIL"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Email or password is incorrect"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/whoAmi": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "operationId": "whoAmI",
+        "summary": "Get current user data",
+        "description": "Return current user data based on bearer token \n\n Allowed status: superadmin, admin, member",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorized, bearer token invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedMess"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get current registered users",
+        "description": "Return list of all users  \n\n Allowed status: superadmin, admin",
+        "operationId": "getUserList",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    },
+                    "count": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, bearer token invalid or auth level below superadmin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedMess"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "not getting permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrNotAllowed"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Error message"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/addAdmin": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "operationId": "createAdmin",
+        "summary": "Add new admin",
+        "description": "Add new admin \n\n Allowed statua: superadmin",
+        "requestBody": {
+          "description": "Required fields [email, password, name]",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterCred"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "create user successfully"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Admin"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, bearer token invalid or auth level below superadmin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedMess"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "not getting permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrNotAllowed"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultErrMsg"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cars": {
+      "get": {
+        "tags": [
+          "cars"
+        ],
+        "summary": "Get car list",
+        "operationId": "getCarList",
+        "description": "Return data list car \n\n Allowed status: superadmin, admin",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "post": {
+                          "$ref": "#/components/schemas/car"
+                        },
+                        "count": {
+                          "type": "integer",
+                          "example": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, bearer token invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedMess"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultErrMsg"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cars-addd": {
+      "post": {
+        "tags": [
+          "cars"
+        ],
+        "summary": "Add new car data",
+        "operationId": "addNewCar",
+        "description": "Add new car data to database \n\n Allowed roles: superadmin, admin",
+        "requestBody": {
+          "description": "Required fields [name, price, size, image]",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "price",
+                  "size",
+                  "image"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Sample Car"
+                  },
+                  "price": {
+                    "type": "integer",
+                    "example": 3000000
+                  },
+                  "size": {
+                    "type": "string",
+                    "enum": [
+                      "Small",
+                      "Medium",
+                      "Large"
+                    ]
+                  },
+                  "image": {
+                    "type": "string",
+                    "example": "3i3mfrnwjernwjekrwk"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/carRes"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, bearer token invalid or auth level below admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedMess"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultErrMsg"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cars/{carId}": {
+      "get": {
+        "tags": [
+          "cars"
+        ],
+        "summary": "Get car data by ID",
+        "operationId": "getCarData",
+        "description": "Return car data based on the car ID \n\n Allowed roles: superadmin, admin",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "carId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            
+            "description": "Numeric ID of the car to get"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/carRes"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, bearer token invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedMess"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found, car Id not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    },
+                    "data": {
+                      "type": "string",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultErrMsg"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "cars"
+        ],
+        "summary": "Edit car data by ID",
+        "operationId": "editCarData",
+        "description": "Modify car data based on the car ID \n\n Allowed roles: superadmin, admin",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "carId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Numeric ID of the car to edit"
+          }
+        ],
+        "requestBody": {
+         "description": "Required fields [name, price, size, image]",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "price",
+                  "size",
+                  "image"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Sample Car"
+                  },
+                  "price": {
+                    "type": "integer",
+                    "example": 3000000
+                  },
+                  "size": {
+                    "type": "string",
+                    "enum": [
+                      "Small",
+                      "Medium",
+                      "Large"
+                    ]
+                  },
+                  "image": {
+                    "type": "string",
+                    "example": "3i3mfrnwjernwjekrwk"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/carRes"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, bearer token invalid or auth level below admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedMess"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found, car Id not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "failed"
+                    },
+                    "data": {
+                      "type": "string",
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultErrMsg"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "cars"
+        ],
+        "summary": "Delete car data by ID",
+        "operationId": "deleteCarData",
+        "description": "Delete car data based on the car ID \n\n Allowed roles: superadmin, admin",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "carId",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true,
+            "description": "Numeric ID of the car to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "example": 1
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized, bearer token invalid or auth level below admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedMess"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found, car Id not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "example": 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Default error response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DefaultErrMsg"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "UnauthorizedMess": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Unauthorized"
+          }
+        }
+      },
+      "carUpdate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "toyota"
+          },
+          "price": {
+            "type": "string",
+            "example": 3000000000000000
+          },
+          "size": {
+            "type": "string",
+            "example": "Large"
+          },
+          "image": {
+            "type": "string",
+            "example": "prwerwrwperk"
+          }
+        }
+      },
+      "carRes": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 4
+          },
+          "name": {
+            "type": "string",
+            "example": "toyota"
+          },
+          "price": {
+            "type": "string",
+            "example": 3000000000000000
+          },
+          "size": {
+            "type": "string",
+            "example": "Large"
+          },
+          "image": {
+            "type": "string",
+            "example": "prwerwrwperk"
+          },
+          "cratedBy": {
+            "type": "string",
+            "example": "nama super admin"
+          },
+          "updatedBy": {
+            "type": "string",
+            "example": "nama super admin"
+          },
+          "deletedBy": {
+            "type": "string",
+            "example": "nama super admin"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2022-10-12T13:25:21.995Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2022-10-12T13:25:21.995Z"
+          }
+        }
+      },
+      "car": {
+        "type": "array",
+        "items": {
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 4
+            },
+            "name": {
+              "type": "string",
+              "example": "toyota"
+            },
+            "price": {
+              "type": "integer",
+              "example": 3000000
+            },
+            "size": {
+              "type": "string",
+              "example": "Large"
+            },
+            "image": {
+              "type": "string",
+              "example": "toyota.png"
+            },
+            "cratedBy": {
+              "type": "string",
+              "example": "nama super admin"
+            },
+            "updatedBy": {
+              "type": "string",
+              "example": "nama super admin"
+            },
+            "deletedBy": {
+              "type": "string",
+              "example": "nama super admin"
+            },
+            "createdAt": {
+              "type": "string",
+              "example": "2022-10-12T13:25:21.995Z"
+            },
+            "updatedAt": {
+              "type": "string",
+              "example": "2022-10-12T13:25:21.995Z"
+            }
+          }
+        }
+      },
+      "Admin": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 4
+          },
+          "email": {
+            "type": "string",
+            "example": "email@account.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "kjc348y180ckrojn^@#T&@#@BRGFEKHDB"
+          },
+          "name": {
+            "type": "string",
+            "example": "myName"
+          },
+          "status": {
+            "type": "string",
+            "example": "admin"
+          },
+          "cratedBy": {
+            "type": "string",
+            "example": "nama super admin"
+          },
+          "updatedBy": {
+            "type": "string",
+            "example": "nama super admin"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2022-10-12T13:25:21.995Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2022-10-12T13:25:21.995Z"
+          }
+        }
+      },
+      "ErrNotAllowed": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "FAIL"
+          },
+          "message": {
+            "type": "string",
+            "example": "you are not allowed"
+          }
+        }
+      },
+      "DefaultErrMsg": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "FAIL"
+          },
+          "message": {
+            "type": "string",
+            "example": "Error message"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 4
+          },
+          "email": {
+            "type": "string",
+            "example": "email@account.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "nfuehfuhedubfubudbububuBU23312141"
+          },
+          "name": {
+            "type": "string",
+            "example": "myName"
+          },
+          "status": {
+            "type": "string",
+            "example": "admin"
+          },
+          "cratedBy": {
+            "type": "string",
+            "example": "default"
+          },
+          "updatedBy": {
+            "type": "string",
+            "example": "default"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2022-10-12T13:25:21.995Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2022-10-12T13:25:21.995Z"
+          }
+        }
+      },
+      "RegisterCred": {
+        "type": "object",
+        "required": [
+          "email",
+          "password",
+          "name"
+        ],
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "email@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "$2a$10$FnVwzf2Q73cC1tbFoMAk4.QTCNTzGh2prNXQ0m2y6Nk2VAVzmNNC."
+          },
+          "name": {
+            "type": "string",
+            "example": "myName"
+          }
+        }
+      },
+      "LoginCred": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 4
+          },
+          "email": {
+            "type": "string",
+            "example": "email@account.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "$2a$10$FnVwzf2Q73cC1tbFoMAk4.QTCNTzGh2prNXQ0m2y6Nk2VAVzmNNC."
+          },
+          "name": {
+            "type": "string",
+            "example": "myName"
+          },
+          "status": {
+            "type": "string",
+            "example": "admin"
+          },
+          "cratedBy": {
+            "type": "string",
+            "example": "default"
+          },
+          "updatedBy": {
+            "type": "string",
+            "example": "default"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2022-10-12T13:25:21.995Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2022-10-12T13:25:21.995Z"
+          },
+          "token": {
+            "type": "string",
+            "example": "eyJybuyjyubyvvtvrvrv.eyJpZCI6MiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE2NjYzMzY3ODh9.QHZ83TJTPPlupt8_DTROQDHwqkPoVwpEksHQLwya7-0"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}
